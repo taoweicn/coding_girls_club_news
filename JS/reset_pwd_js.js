@@ -1,7 +1,11 @@
 $("#reset_pw_btn").click(function () {
-    let user_email=location.href.split("?")[1].split("=")[1];
-    let user_pw = $('#user_pw').val();
-    let user_cfm_pw = $('#user_cfm_pw').val();
+    let start=location.href.indexOf("?"),
+        end=location.href.indexOf("&&"),
+        encry=new Encryption(),
+        user_email=encry.decode(location.href.slice(start+1, end)),
+        user_pw = $('#user_pw').val(),
+        user_cfm_pw = $('#user_cfm_pw').val();
+    alert(user_email);
     if(user_pw.length < 7){
         layer.alert('Your password is too short, please change a safety one.',{
             icon: 0,

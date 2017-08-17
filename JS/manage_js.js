@@ -183,7 +183,7 @@ function addBtnEvent(type){     //type：新闻、博客
     let name=translateTypeToName(type);
 
     $("article").find(".submit").click(function () {
-        if( isEmpty(editor, mEditor, whichEditor) ){                //如果编辑器内容和标题都为空
+        if( isEmpty(editor, mEditor) ){                //如果编辑器内容和标题都为空
                 layer.alert('请键入完整内容后再提交', {
                     title: '提示',
                     icon: 0,
@@ -254,9 +254,9 @@ function addZero(num) {             //将一位数字变成两位字符串
 
 
 /*判断内容和标题是否为空,如果有一项空，则返回true*/
-function isEmpty(editor, mEditor, boolean) {     //boolean为编辑器类别，true为富文本，false为Markdown
+function isEmpty(editor, mEditor) {
     let title=$(".input-title").val();           //标题内容
-    if(boolean){
+    if(whichEditor()){                          //编辑器类别，true为富文本，false为Markdown
         return editor.txt.html()==="<p><br></p>" || title==="";
     }
     else{
@@ -449,7 +449,7 @@ function modifyBtnEvent(data, type, name) {
     let submitBtn=$("article").find(".submit");
     submitBtn.unbind();
     submitBtn.click(function () {
-        if (isEmpty(editor, mEditor, whichEditor())) {                //如果编辑器内容和标题都为空
+        if (isEmpty(editor, mEditor)) {                //如果编辑器内容和标题都为空
             layer.alert('请键入完整内容后再提交', {
                 title: '提示',
                 icon: 0,

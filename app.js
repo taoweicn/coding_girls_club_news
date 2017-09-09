@@ -106,7 +106,6 @@ app.post("/login", function (req, res) {
 
     db.all(sql_str, function (err, result) {
         if(result.length) {
-            // console.log(result);
             res.send(result);
         } else {
             res.send(false);
@@ -123,7 +122,7 @@ app.get("/all_news", function (req, res) {
         if (err) {
             console.log("读取数据失败！" + err);
         } else {
-            // console.log(result);
+            //console.log(result);
             res.send(result);
         }
     });
@@ -139,7 +138,7 @@ app.get("/all_blog", function (req, res) {
         if (err) {
             console.log("读取数据失败！" + err);
         } else {
-            // console.log(result);
+            //console.log(result);
             res.send(result);
         }
     });
@@ -156,7 +155,7 @@ app.get("/search_news", function (req, res) {
         if (err) {
             console.log("读取数据失败！" + err);
         } else {
-            // console.log(result);
+            //console.log(result);
             res.send(result);
         }
     });
@@ -174,7 +173,7 @@ app.get("/search_blog", function (req, res) {
         if (err) {
             console.log("读取数据失败！" + err);
         } else {
-            // console.log(result);
+            //console.log(result);
             res.send(result);
         }
     });
@@ -222,11 +221,12 @@ app.post('/addNews', function (req,res) {
     let newsInfo = {
         time:req.body.time,
         title:req.body.title,
+        writer:req.body.writer,
         content:req.body.content,
         headline:req.body.isHeadline
     };
-
-    const sqlStr = "insert into news(news_time,news_title,news_content,isHeadline) values('"+newsInfo.time+"','"+newsInfo.title+"','"+newsInfo.content+"','"+newsInfo.headline+"')";
+    console.log(newsInfo);
+    const sqlStr = "insert into news(news_time,news_title,news_content,news_writer,isHeadline) values('"+newsInfo.time+"','"+newsInfo.title+"','"+newsInfo.writer+"','"+newsInfo.content+"','"+newsInfo.headline+"')";
 
     db.run(sqlStr, function (err) {
         if (err) {
@@ -244,11 +244,12 @@ app.post('/addblog', function (req,res) {
     let blogInfo = {
         time:req.body.time,
         title:req.body.title,
+        writer:req.body.writer,
         content:req.body.content,
         headline:req.body.isHeadline
     };
 
-    const sqlStr = "insert into blogs(blog_time,blog_title,blog_content,isHeadline) values('"+blogInfo.time+"','"+blogInfo.title+"','"+blogInfo.content+"','"+blogInfo.headline+"')";
+    const sqlStr = "insert into blogs(blog_time,blog_title,blog_content,blog_writer,isHeadline) values('"+blogInfo.time+"','"+blogInfo.title+"','"+blogInfo.writer+"','"+blogInfo.content+"','"+blogInfo.headline+"')";
 
     db.run(sqlStr, function (err) {
         if (err) {
@@ -266,19 +267,19 @@ app.put('/edit_news',function (req, res) {
     const editInfo = {
         time:req.body.time,
         title:req.body.title,
+        writer:req.body.writer,
         content:req.body.content,
         headline:req.body.isHeadline,
         id:req.body.modifyId
     };
-    const sqlStr = "update news set news_title ='"+editInfo.title+"',news_content ='"+editInfo.content+"' where id = '"+editInfo.id+"'";
-    console.log(editInfo);
+    const sqlStr = "update news set news_title ='"+editInfo.title+"',news_content ='"+editInfo.content+"',news_writer ='"+editInfo.writer+"' where id = '"+editInfo.id+"'";
+
     db.run(sqlStr,function (err) {
         if (err) {
-            console.log(err);
             res.send("更新失败！" + err);
         } else {
             res.status(200).send('修改成功！');
-            console.log("新闻修改成功！");
+            console.log("修改成功！");
         }
     });
 });
@@ -289,11 +290,12 @@ app.put('/edit_blog',function (req, res) {
     const editInfo = {
         time:req.body.time,
         title:req.body.title,
+        writer:req.body.writer,
         content:req.body.content,
         headline:req.body.isHeadline,
         id:req.body.modifyId
     };
-    const sqlStr = "update blogs set blog_time ='"+editInfo.time+"',blog_title ='"+editInfo.title+"',blog_content ='"+editInfo.content+"' where id = '"+editInfo.id+"'";
+    const sqlStr = "update blogs set blog_time ='"+editInfo.time+"',blog_title ='"+editInfo.title+"',blog_content ='"+editInfo.content+"',blog_writer ='"+editInfo.writer+"' where id = '"+editInfo.id+"'";
 
     db.run(sqlStr,function (err) {
         if (err) {
@@ -337,9 +339,9 @@ app.get("/all_news_pading", function (req, res) {
 
     const req_page = req.query.page;
     const sql_str = "select * from news order by news_time desc limit ('"+req_page+"'-1)*4,4";
-            //根据前台传过来的page,从数据库动态查询相应信息
-            db.all(sql_str, function (err, result) {
-                if (err) {
+    //根据前台传过来的page,从数据库动态查询相应信息
+    db.all(sql_str, function (err, result) {
+        if (err) {
             console.log("读取数据失败！" + err);
         } else {
             res.send(result);
@@ -352,9 +354,9 @@ app.get("/all_blogs_pading", function (req, res) {
 
     const req_page = req.query.page;
     const sql_str = "select * from blogs order by blog_time desc limit ('"+req_page+"'-1)*4,4";
-            //根据前台传过来的page,从数据库动态查询相应信息
-            db.all(sql_str, function (err, result) {
-                if (err) {
+    //根据前台传过来的page,从数据库动态查询相应信息
+    db.all(sql_str, function (err, result) {
+        if (err) {
             console.log("读取数据失败！" + err);
         } else {
             res.send(result);
@@ -400,8 +402,8 @@ app.get("/search", function (req, res) {
 app.get('/time_search',function (req,res) {
 
     const search_time = req.query.searchDate;
-    const page = req.query.searchPage;
-    const sqlStr = "select * from news where news_time like '"+search_time+"%' order by news_time desc limit ('"+page+"'-1)*4,4";
+    /*  const page = req.query.searchPage;*/
+    const sqlStr = "select * from news where news_time like '"+search_time+"%' order by news_time";
 
     db.all(sqlStr, function (err,result) {
         if(!err){
@@ -412,7 +414,20 @@ app.get('/time_search',function (req,res) {
     });
 
 });
+app.get('/time_search_blog',function (req,res) {
 
+    const search_time = req.query.searchDate;
+    const sqlStr = "select * from blogs where blog_time like '"+search_time+"%' order by blog_time";
+
+    db.all(sqlStr, function (err,result) {
+        if(!err){
+            res.send(result);
+        } else{
+            res.send(err);
+        }
+    });
+
+});
 //前台根据id获取详细新闻
 app.get('/detail',function (req,res) {
 
@@ -428,10 +443,23 @@ app.get('/detail',function (req,res) {
     })
 });
 
+app.get('/detail_blog',function (req,res) {
+
+    const sqlStr = `select * from blogs where id = ${req.query.blogsid}`;
+
+    db.all(sqlStr, function (err, result) {
+        if(err){
+            console.log("读取数据失败！");
+        } else {
+            res.send(result);
+        }
+    })
+});
+
 //前台首页头条新闻
 app.get("/news_list", function (req, res) {
 
-    const sql_str = "select * from news where isHeadline='1' order by news_time desc limit 0,3";
+    const sql_str = "select * from news where isHeadline='true' order by news_time desc limit 0,3";
     //查询当日的头条新闻
     db.all(sql_str, function (err, result) {
         if (err) {
@@ -477,7 +505,6 @@ app.get('/all_blog_count', function (req, res) {
 
 });
 
-
 function resetPwdEmail(sendEmail) {
     // let encrypty = new encryptionModule.Encryption();
     let encry =new Encryption();
@@ -500,7 +527,7 @@ function resetPwdEmail(sendEmail) {
         <p>亲爱的${sendEmail}，您在${(new Date()).toString().substring(3,25)}提交了密码重置请求，请点击下面的链接重置密码;若此请求非您本人操作，请忽略此消息.</p>
           <div style="text-align: center; margin: 20px">   
          <span style="background-color: #4785af; color:#fff; border-radius: 5px; padding: 10px 16px;">
-         <a href="http://127.0.0.1:3000/reset-password?${encry.encode(sendEmail)}&&email=${sendEmail}" style="color: #fff; text-decoration: none">
+         <a href="http://codingirls.vapors.pw:3000/reset-password?${encry.encode(sendEmail)}&&email=${sendEmail}" style="color: #fff; text-decoration: none">
             点此重置密码
          </a>
          </span>
@@ -623,11 +650,11 @@ function Encryption() {
         return string;
     }
 }
+
 //运行在3000端口
 app.listen(3000, () => {
     console.log('running on port 3000...');
 });
-
 
 
 

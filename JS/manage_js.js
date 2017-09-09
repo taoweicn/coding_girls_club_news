@@ -48,10 +48,11 @@ let editor = new E('#editor');
 
 let buttonHtmlM="<button id='switch-editor' type='button'>切换为Markdown编辑器</button>";
 let buttonHtml="<button id='switch-editor' type='button'>切换为富文本编辑器</button>";
-let radio="<div id='settingHeadline'><i class='fa fa-fire' aria-hidden='true'></i> &nbsp;设置为头条：<input type='radio' name='isHeadline' value='true'>是 &nbsp;<input type='radio' name='isHeadline' value='false' checked>否</div>";
+let radio="<div id='settingHeadline'><i class='fa fa-fire' aria-hidden='true'></i>&nbsp;设置为头条：<input type='radio' name='isHeadline' value='true'>是 &nbsp;<input type='radio' name='isHeadline' value='false' checked>否</div>";
+let setWriter="<div id='set-writer'><i class=\"fa fa-user\" aria-hidden=\"true\"></i>&nbsp;设置作者：<input type='text' value='admin'></div>";
 let button=" <button type='button' class='submit'><i class='fa fa-check' aria-hidden='true'></i>&nbsp;提交</button> <button type='button' class='cancel'><i class='fa fa-times' aria-hidden='true'></i>&nbsp;撤销</button>";
-let editorHtml="<div class='editor'> <input type='text' class='input-title' placeholder='在此输入你的标题...'><div id='editor'></div></div>"+radio+button;
-let editorHtmlM="<div class='editor'> <input type='text' class='input-title' placeholder='在此输入你的标题...'><div id='editor-md'></div></div>"+radio+button;
+let editorHtml="<div class='editor'> <input type='text' class='input-title' placeholder='在此输入你的标题...'><div id='editor'></div></div>"+radio+setWriter+button;
+let editorHtmlM="<div class='editor'> <input type='text' class='input-title' placeholder='在此输入你的标题...'><div id='editor-md'></div></div>"+radio+setWriter+button;
 
 $("#new-news").click(function () {
     editorArea("新闻");
@@ -79,6 +80,7 @@ function editorArea(type, data){    //type：新闻、博客,data为需要预填
         $("article").html("<div class='tip'> <span><i class='fa fa-code' aria-hidden='true'></i>&nbsp;请添加"+type+"内容</span> "+buttonHtml+"</div>"+editorHtmlM);
         if(data){
             $(".input-title").val(data[name+"_title"]);
+            $("#set-writer input").val(data[name+"_writer"]);
             /*Markdown编辑器*/
             createMarkdown(data[name+"_content"]);
         }
@@ -90,6 +92,7 @@ function editorArea(type, data){    //type：新闻、博客,data为需要预填
         $("article").html("<div class='tip'> <span><i class='fa fa-code' aria-hidden='true'></i>&nbsp;请添加"+type+"内容</span> "+buttonHtmlM+"</div>"+editorHtml);
         if(data){
             $(".input-title").val(data[name+"_title"]);
+            $("#set-writer input").val(data[name+"_writer"]);
             /*富文本编辑器*/
             createEditor(data[name+"_content"]);
         }
@@ -193,11 +196,12 @@ function addBtnEvent(type){     //type：新闻、博客
             let myDate=new Date(), time ,content;
             let month=myDate.getMonth()+1, date=myDate.getDate(), hours=myDate.getHours(), minutes=myDate.getMinutes();
             time=myDate.getFullYear().toString()+"-"+addZero(month)+"-"+addZero(date)+" "+addZero(hours)+":"+addZero(minutes);
-            let title= $(".input-title").val();
+            let title = $(".input-title").val();
+            let writer = $("#set-writer input").val();
             let isHeadline=$("input[name='isHeadline']:checked").val();
 
             //将编辑器中内容发送给服务器
-            sendContent(title, getEditorValue(), time, isHeadline, type);
+            sendContent(title, getEditorValue(), writer, time, isHeadline, type);
         }
     });
 
@@ -215,7 +219,7 @@ function addBtnEvent(type){     //type：新闻、博客
 
 
 /*向服务器发送新建文本*/
-function sendContent(title, content, time, isHeadline, type) {
+function sendContent(title, content, writer, time, isHeadline, type) {
     let name=translateTypeToName(type);
 
     $.ajax({
@@ -224,6 +228,7 @@ function sendContent(title, content, time, isHeadline, type) {
         data: {
             "title": title,
             "content": content,
+            "writer": writer,
             "time": time,
             "isHeadline": isHeadline
         },
@@ -325,10 +330,17 @@ $("#set-headline").click(function () {
 
 /*管理员账户设置*/
 $("#admin-account").click(function () {
-    layer.alert('对不起，你没有操作权限！', {
-        title: '警告',
-        icon: 5,
-    })
+    $.get('/isAdmin', function (result) {
+        if(result){
+            //超级管理员管理界面
+        }
+        else{
+            layer.alert('对不起，你没有操作权限！', {
+                title: '警告',
+                icon: 5,
+            })
+        }
+    });
 });
 
 
@@ -443,7 +455,7 @@ function deleteBtnEvent(data, name) {
 }
 
 /*列表页与详情页的修改按钮事件*/
-function modifyBtnEvent(data, type, name) {
+function modifyBtnEvent(data, type) {
     editorArea(type, data);
     let modifyId=data.id;
     let submitBtn=$("article").find(".submit");
@@ -461,17 +473,18 @@ function modifyBtnEvent(data, type, name) {
                 minutes = myDate.getMinutes();
             time = myDate.getFullYear().toString() + "-" + addZero(month) + "-" + addZero(date) + " " + addZero(hours) + ":" + addZero(minutes);
             let title = $(".input-title").val();
+            let writer = $("#set-writer input").val();
             let isHeadline = $("input[name='isHeadline']:checked").val();
 
             /*提交修改后的数据*/
-            sendModifiedContent(title, getEditorValue(), time, isHeadline, type, modifyId);
+            sendModifiedContent(title, getEditorValue(), writer, time,  isHeadline, type, modifyId);
         }
     });
 }
 
 
 /*向服务器发送修改文本*/
-function sendModifiedContent(title, content, time, isHeadline, type, modifyId) {     //modifyId为要修改文章的id
+function sendModifiedContent(title, content, writer, time, isHeadline, type, modifyId) {     //modifyId为要修改文章的id
     let name;
     if(type==="新闻"){
         name="news";
@@ -485,6 +498,7 @@ function sendModifiedContent(title, content, time, isHeadline, type, modifyId) {
         data: {
             "title": title,
             "content": content,
+            "writer": writer,
             "time": time,
             "isHeadline": isHeadline,
             "modifyId": modifyId

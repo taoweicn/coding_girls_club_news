@@ -226,13 +226,26 @@ article{
     margin-bottom: 20px;
 }
 #settingHeadline{
-    margin-top: 10px;
+    margin-top: 4px;
     margin-left: 45px;
     display: inline-block;
     font-size: 16px;
+    float: left;
 }
 a:hover{
     cursor: pointer;
 }
-
+#set-writer{
+    margin-top: 4px;
+    margin-left: 60px;
+    display: inline-block;
+    float: left;
+}
+#set-writer input{
+    width: 60px;
+    height: 18px;
+    padding-left: 6px;
+    border: 1px solid #ccc;
+    color: #444;
+}
 

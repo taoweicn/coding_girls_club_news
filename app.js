@@ -226,7 +226,7 @@ app.post('/addNews', function (req,res) {
         headline:req.body.isHeadline
     };
     console.log(newsInfo);
-    const sqlStr = "insert into news(news_time,news_title,news_content,news_writer,isHeadline) values('"+newsInfo.time+"','"+newsInfo.title+"','"+newsInfo.writer+"','"+newsInfo.content+"','"+newsInfo.headline+"')";
+    const sqlStr = "insert into news(news_time,news_title,news_content,news_writer,isHeadline) values('"+newsInfo.time+"','"+newsInfo.title+"','"+newsInfo.content+"','"+newsInfo.writer+"','"+newsInfo.headline+"')";
 
     db.run(sqlStr, function (err) {
         if (err) {
@@ -249,7 +249,7 @@ app.post('/addblog', function (req,res) {
         headline:req.body.isHeadline
     };
 
-    const sqlStr = "insert into blogs(blog_time,blog_title,blog_content,blog_writer,isHeadline) values('"+blogInfo.time+"','"+blogInfo.title+"','"+blogInfo.writer+"','"+blogInfo.content+"','"+blogInfo.headline+"')";
+    const sqlStr = "insert into blogs(blog_time,blog_title,blog_content,blog_writer,isHeadline) values('"+blogInfo.time+"','"+blogInfo.title+"','"+blogInfo.content+"','"+blogInfo.writer+"','"+blogInfo.headline+"')";
 
     db.run(sqlStr, function (err) {
         if (err) {
@@ -656,6 +656,139 @@ app.listen(3000, () => {
     console.log('running on port 3000...');
 });
 
+/***************************第一版维护******************************/
+//后台添加report
+app.post("/add_report", function (req, res) {
+
+    //图片也是直接存的链接
+    const reportInfo = {
+        image:req.body.report_image,
+        url:req.body.report_url
+    };
+    const sqlStr = "insert into report values('"+reportInfo.image+"','"+reportInfo.url+"')";
+
+    app.run(sqlStr, function (err) {
+        if(err){
+            res.send(false);
+        } else {
+            res.send(true);
+        }
+    });
+
+});
+
+//展示report
+app.get("/show_report",function (req, res) {
+
+    const sqlStr = "select * from report";
+
+    db.all(sqlStr, function (err, result) {
+        if(err){
+            res.send(false);
+        } else {
+            res.send(result);
+        }
+    });
+
+});
+
+//修改report
+app.put("/update_report", function (req, res) {
+
+    const newReport = {
+        id:req.body.report_id,
+        image:req.body.report_image,
+        url:req.body.report_url
+    };
+    const sqlStr = "update report set report_image = '"+newReport.image+"',report_url = '"+newReport.url+"' where id = '"+newReport.id+"'";
+
+    db.run(sqlStr,function (err) {
+        if(err){
+            res.send(false);
+        } else {
+            res.send(true);
+        }
+    });
+
+});
+
+//删除report
+app.delete("/delete_report", function (req, res) {
+    const deleteId = req.body.report_id;
+    const sqlStr = "delete from report where id = '"+deleteId+"'";
+
+    db.run(sqlStr, function (err) {
+        if(err){
+            res.send(false);
+        } else {
+            res.send(true);
+        }
+    });
+
+});
+
+//前台发送请求，判断该用户是不是管理员
+app.get('/isAdmin',function(req,res){
+    db.run(sqlStr,function(err){
+        if(err) {
+            res.send(false);
+        }
+        else {
+            res.send(true);   //前端接收  true 代表super admin
+        }
+    });
+});
+//根据上面接收到的true，向后台发送管理列表请求
+app.get('/adminList',function(req,res){
+
+    let sqlStr1 = "select * from manager";
+
+    db.all(sqlStr,function(err, result){
+        if(err){
+            res.send(err);
+        } else {
+            res.send(result)
+        }
+    });
+});
+
+//后台添加管理员
+app.post('/add_admin', function (req, res) {
+
+    const manegerInfo = {
+        managerName: req.body.manager_name,
+        managerEmail: req.body.manager_email,
+        managerPwd: req.body.manager_pwd
+    };
+
+    const sql_str = "insert into manager values('" + encry_password(manegerInfo.managerPwd) + "','" + manegerInfo.managerName + "','" + manegerInfo.managerEmail + "','" + manegerInfo.managerPwd + "')";
+    //录入一条管理员信息,并且将加密后的密码保存在数据库中
+    db.run(sql_str, function (err) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(true);
+        }
+    });
+});
+
+//后台删除管理员
+app.delete("/delete_admin",function (req, res) {
+
+    const deleteIndex = req.body.manager_email; //获取前台返回需要删除的邮箱
+    const sqlStr = "delete from manager where manager_email = '"+deleteIndex+"'";
+
+    db.run(sqlStr, function (err) {
+        if(err){
+            res.send(false);
+        } else {
+            res.send(true);
+        }
+
+    });
+});
+
+/**************************************************************************/
 
 
 

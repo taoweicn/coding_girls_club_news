@@ -248,4 +248,24 @@ a:hover{
     border: 1px solid #ccc;
     color: #444;
 }
-
+.add-admin{
+    float: right;
+    width: 100px;
+    margin-right: 40px;
+    height: 30px;
+    color: #fff;
+    background-color: #3c8dbc;
+    border-style: none;
+    border-radius: 5px;
+    outline: none;
+    font-size: 14px;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+.admin-lists{
+    border: 1px solid #eee;
+    width: 600px;
+}
+.admin-list{
+    border: 1px solid #eee;
+}

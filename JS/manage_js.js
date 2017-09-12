@@ -333,6 +333,7 @@ $("#admin-account").click(function () {
     $.get('/isAdmin', function (result) {
         if(result){
             //超级管理员管理界面
+            alert("你是超级管理员！");
         }
         else{
             layer.alert('对不起，你没有操作权限！', {

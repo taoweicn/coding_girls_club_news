@@ -55,6 +55,7 @@ hr{
     text-align: center;
 }
 .article{
+    width: calc(100% - 240px);
     position: absolute;
     left: 80px;
     top: 0;

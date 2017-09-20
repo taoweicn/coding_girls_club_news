@@ -249,9 +249,7 @@ a:hover{
     color: #444;
 }
 .add-admin{
-    float: right;
     width: 100px;
-    margin-right: 40px;
     height: 30px;
     color: #fff;
     background-color: #3c8dbc;
@@ -263,9 +261,31 @@ a:hover{
     cursor: pointer;
 }
 .admin-lists{
-    border: 1px solid #eee;
-    width: 600px;
+    width: 800px;
+    border-collapse:collapse;
+    text-align: center;
+    margin-top: 30px;
 }
-.admin-list{
-    border: 1px solid #eee;
+.super-admin{
+    margin: 40px 50px;
+}
+.admin-list td{
+    font-size: 14px;
+    border: 1px solid #ddd;
+    height: 36px;
+}
+.admin-list td button{
+    color: #fff;
+    border-style: none;
+    border-radius: 3px;
+    outline: none;
+    padding: 2px 3px;
+}
+.info-btn{
+    background-color: #5bc0de;
+    cursor: pointer;
+}
+.danger-btn{
+    background-color: #c9302c;
+    cursor: pointer;
 }

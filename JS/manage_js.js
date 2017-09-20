@@ -330,17 +330,39 @@ $("#set-headline").click(function () {
 
 /*管理员账户设置*/
 $("#admin-account").click(function () {
-    // $.get('/isAdmin', function (result) {
-    //     if(result){
-    //         //超级管理员管理界面
-    //     }
-    //     else{
+    let manager_email=$.cookie("user_email");
+    $.get('/isAdmin?manager_email='+manager_email, function (whetherSuperAdmin) {
+        if(true){
+            //超级管理员管理界面
+            $.get('/adminList', function (result) {
+                let div=$("<div class='super-admin'></div>");
+                div.load("administrator_list.html", function () {
+                    let tbody=$(".admin-tbody");
+                    for(let i=0; i<result.length; i++){
+                        let tr=$("<tr class='admin-list'></tr>");
+                        tr.html(
+                            `<td>${result[i].manager_name}</td>
+                            <td>${result[i].manager_email}</td>
+                            <td>${result[i].manager_pwd}</td>
+                            <td><button class="info-btn">设为超级管理员</button></td>
+                            <td><button class="danger-btn">删除账户</button></td>`
+                        );
+                        if(result[i].super_admin){
+                            tr.find(".info-btn").html("已是超级管理员").removeClass("info-btn");
+                        }
+                        tbody.append(tr);
+                    }
+                });
+                $("article").html(div);
+            })
+        }
+        else{
             layer.alert('对不起，你没有操作权限！', {
                 title: '警告',
                 icon: 5,
             })
-    //     }
-    // });
+        }
+    });
 });
 
 
@@ -376,7 +398,7 @@ function createListPage(type, name, total, current) {    //类型：新闻/博�
         for(let i=0;i<data.length;i++){
             let item=data[i];
             let div=$("<div></div>");
-            div.load("list.html",function () {
+            div.load("list.html", function () {
                 $("#content").append(div);
                 let preview=$(".preview").eq(i);
                 let listDate=preview.find(".date");

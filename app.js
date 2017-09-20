@@ -90,6 +90,11 @@ app.get('/reset-password', function (req, res) {
     res.sendFile(__dirname + '/HTML/' + 'reset_pwd.html');
 });
 
+//读取administrator_list.html文件
+app.get('/administrator_list.html', function (req, res) {
+    res.sendFile(__dirname + '/HTML/' + 'administrator_list.html');
+});
+
 
 
 
@@ -729,6 +734,10 @@ app.delete("/delete_report", function (req, res) {
 
 //前台发送请求，判断该用户是不是管理员
 app.get('/isAdmin',function(req,res){
+
+    const manager_email = req.query.manager_email;
+    let sqlStr = "select * from manager where super_admin = true and manager_email = '"+manager_email+"'";
+
     db.run(sqlStr,function(err){
         if(err) {
             res.send(false);
@@ -738,15 +747,17 @@ app.get('/isAdmin',function(req,res){
         }
     });
 });
+
 //根据上面接收到的true，向后台发送管理列表请求
 app.get('/adminList',function(req,res){
 
-    let sqlStr1 = "select * from manager";
+    let sqlStr = "select * from manager";
 
     db.all(sqlStr,function(err, result){
         if(err){
             res.send(err);
         } else {
+            console.log(result);
             res.send(result)
         }
     });

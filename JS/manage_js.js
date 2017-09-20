@@ -340,7 +340,6 @@ $("#admin-account").click(function () {
                 icon: 5,
             })
     //     }
-
     // });
 });
 

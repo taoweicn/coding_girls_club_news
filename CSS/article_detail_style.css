@@ -14,11 +14,13 @@
     color: #333333;
     overflow: hidden;
 }
-#detail-time{
-    width: 200px;
+#detail-info{
     margin: 30px 0 30px 7%;
     font-size: 14px;
     color: #615e5e;
+}
+#detail-info span:nth-child(1){
+    margin-right: 30px;
 }
 #detail-delete-btn, #detail-modify-btn{
     float: right;

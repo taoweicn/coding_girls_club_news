@@ -29,8 +29,8 @@ $("#logo").click(function () {
 
 /*修改密码按钮*/
 $(".modify-password").click(function () {
-    let user_email = $.session.get('admin_email');
-    window.location.href="/reset-password?email="+user_email;
+    let user_email = $.session.get('admin_email'), encry=new Encryption();
+    window.location.href=`/reset-password?${encry.encode(user_email)}&email=${user_email}`;
 });
 
 /*注销功能*/
@@ -332,7 +332,7 @@ $("#set-headline").click(function () {
 $("#admin-account").click(function () {
     let manager_email=$.cookie("user_email");
     $.get('/isAdmin?manager_email='+manager_email, function (whetherSuperAdmin) {
-        if(true){
+        if(whetherSuperAdmin){
             //超级管理员管理界面
             $.get('/adminList', function (result) {
                 let div=$("<div class='super-admin'></div>");
@@ -354,7 +354,7 @@ $("#admin-account").click(function () {
                     }
                 });
                 $("article").html(div);
-            })
+            });
         }
         else{
             layer.alert('对不起，你没有操作权限！', {
@@ -444,7 +444,7 @@ function createDetailPage(articleData, name, type) {
     div.load("article_detail.html", function () {
         $("article").html(div);
         $("#detail-title").html(articleData[name+"_title"]);
-        $("#detail-time").find("span").html(articleData[name+"_time"]);
+        $("#detail-info").children().eq(0).html(articleData[name+"_time"]).next().html(articleData[name+"_writer"]);
         $("#detail-article").html(articleData[name+"_content"]);
         $("#detail-delete-btn").click(function () {   //删除按钮绑定事件
            deleteBtnEvent(articleData, name);

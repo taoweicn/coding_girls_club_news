@@ -532,7 +532,7 @@ function resetPwdEmail(sendEmail) {
         <p>亲爱的${sendEmail}，您在${(new Date()).toString().substring(3,25)}提交了密码重置请求，请点击下面的链接重置密码;若此请求非您本人操作，请忽略此消息.</p>
           <div style="text-align: center; margin: 20px">   
          <span style="background-color: #4785af; color:#fff; border-radius: 5px; padding: 10px 16px;">
-         <a href="http://codingirls.vapors.pw:3000/reset-password?${encry.encode(sendEmail)}&&email=${sendEmail}" style="color: #fff; text-decoration: none">
+         <a href="http://codingirls.vapors.pw:3000/reset-password?${encry.encode(sendEmail)}&email=${sendEmail}" style="color: #fff; text-decoration: none">
             点此重置密码
          </a>
          </span>
@@ -733,17 +733,19 @@ app.delete("/delete_report", function (req, res) {
 });
 
 //前台发送请求，判断该用户是不是管理员
-app.get('/isAdmin',function(req,res){
+app.get('/isAdmin',function(req, res){
 
     const manager_email = req.query.manager_email;
-    let sqlStr = "select * from manager where super_admin = true and manager_email = '"+manager_email+"'";
+    let sqlStr = "select * from manager where super_admin = 'true' and manager_email = '"+manager_email+"'";
 
-    db.run(sqlStr,function(err){
-        if(err) {
+    db.all(sqlStr,function(err, result) {
+        if(err){
+            console.log(err +" 查询异常，请稍后再试！");
             res.send(false);
-        }
-        else {
-            res.send(true);   //前端接收  true 代表super admin
+        }else if(result.length){     //查询到信息，存在
+            res.send(true);
+        }else {
+            res.send(false);   //查询成功，但为空
         }
     });
 });
@@ -757,7 +759,6 @@ app.get('/adminList',function(req,res){
         if(err){
             res.send(err);
         } else {
-            console.log(result);
             res.send(result)
         }
     });

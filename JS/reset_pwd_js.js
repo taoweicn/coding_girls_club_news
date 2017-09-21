@@ -1,6 +1,6 @@
 $("#reset_pw_btn").click(function () {
     let start=location.href.indexOf("?"),
-        end=location.href.indexOf("&&"),
+        end=location.href.indexOf("&"),
         encry=new Encryption(),
         user_email=encry.decode(location.href.slice(start+1, end)),
         user_pw = $('#user_pw').val(),

@@ -547,8 +547,6 @@ function resetPwdEmail(sendEmail) {
         } else {
             console.log('Message %s sent: %s', info.messageId, info.response);
         }
-
-
     });
 }
 

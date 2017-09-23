@@ -347,6 +347,25 @@ $("#admin-account").click(function () {
                             <td><button class="info-btn">设为超级管理员</button></td>
                             <td><button class="danger-btn">删除账户</button></td>`
                         );
+
+                        tr.find(".danger-btn").click(function () {
+                            layer.confirm('是否确定删除此管理员？', {
+                                icon: 0,
+                                title: '提示',
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                layer.close(index);
+                                $.ajax({
+                                    url: '/delete_admin',
+                                    type: 'DELETE',
+                                    data: {"manager_email": result[i].manager_email},
+                                    success: function () {
+                                        $("#admin-account").trigger("click");
+                                    }
+                                });
+                            });
+                        });
+
                         if(result[i].super_admin){
                             tr.find(".info-btn").html("已是超级管理员").removeClass("info-btn");
                         }

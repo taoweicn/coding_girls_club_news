@@ -697,5 +697,6 @@ function displaySearchResult(data, type, name, keywords) {            //type：�
 
 /*高亮搜索关键词*/
 function markKeywords(keywords, content) {
-    return content.replace(keywords, "<mark>"+keywords+"</mark>");
+    let re = new RegExp("("+keywords+")", "gim");
+    return content.replace(re, "<mark>$1</mark>");
 }
